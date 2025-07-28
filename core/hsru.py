@@ -30,7 +30,7 @@ class SurrogateSpike(Function):
 
 spike_fn = SurrogateSpike.apply
 
-class HSRULayer(nn.Module):
+class DualStateLIFLayer(nn.Module):
     """
     A recurrent cell with a dual-state memory system.
 
@@ -77,7 +77,7 @@ class HSRnn(nn.Module):
         self.rnn_cells = nn.ModuleList()
         layer_input_size = input_size
         for _ in range(num_layers):
-            self.rnn_cells.append(HSRULayer(layer_input_size, hidden_size))
+            self.rnn_cells.append(DualStateLIFLayer(layer_input_size, hidden_size))
             layer_input_size = hidden_size
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
@@ -101,7 +101,7 @@ class HSRnnForCausalLM(nn.Module):
         self.rnn_cells = nn.ModuleList()
         layer_input_size = input_size
         for hidden_size in hidden_layers_config:
-            self.rnn_cells.append(HSRULayer(layer_input_size, hidden_size))
+            self.rnn_cells.append(DualStateLIFLayer(layer_input_size, hidden_size))
             layer_input_size = hidden_size
 
         self.lm_head = nn.Linear(hidden_layers_config[-1], output_size)
@@ -121,36 +121,3 @@ class HSRnnForCausalLM(nn.Module):
         output_sequence = torch.stack(outputs_over_time, dim=1)
         logits = self.lm_head(output_sequence)
         return logits
-
-if __name__ == '__main__':
-    model_config = {
-        'input_size': 16,
-        'hidden_layers_config': [128], # Example of different sizes
-        'vocab_size': 1000,
-        'hsru_kwargs': {'refractory_steps': 5}
-    }
-
-    # Test the Base Model (Sequence-to-Vector)
-    print("Testing Base Model (HSRnnBase)")
-    base_model = torch.jit.script(HSRnn(
-        input_size=model_config['input_size'],
-        hidden_size=model_config['hidden_layers_config'][0],
-        num_layers =2,
-    ))
-    dummy_input = torch.randn(4, 50, 16)
-    final_state = base_model(dummy_input)
-    print(f"Input shape: {dummy_input.shape}")
-    print(f"Base model output shape (final hidden state): {final_state.shape}")
-    assert final_state.shape == (4, 128)
-    print("✅ HSRnnBase works as a Seq2Vec model.")
-
-    # --- Test the Full Language Model (Sequence-to-Sequence) ---
-    print("\n--- Testing Full Language Model (HSRnnForCausalLM) ---")
-    lm_model = torch.jit.script(HSRnnForCausalLM( input_size=model_config['input_size'],
-        hidden_layers_config=model_config['hidden_layers_config'],
-                                 output_size=model_config['vocab_size']))
-    output_logits = lm_model(dummy_input)
-    print(f"Input shape: {dummy_input.shape}")
-    print(f"LM model output shape (logits sequence): {output_logits.shape}")
-    assert output_logits.shape == (4, 50, 1000)
-    print("✅ HSRnnForCausalLM works as a Seq2Seq model.")

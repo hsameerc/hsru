@@ -3,7 +3,7 @@ from typing import List
 import torch
 import torch.nn as nn
 
-from core.hsru import HSRULayer
+from core.hsru import DualStateLIFLayer
 
 
 # ==============================================================================
@@ -28,7 +28,7 @@ class HSRnnBase(nn.Module):
         self.rnn_cells = nn.ModuleList()
         layer_input_size = input_size
         for hidden_size in hidden_layers_config:
-            self.rnn_cells.append(HSRULayer(layer_input_size, hidden_size))
+            self.rnn_cells.append(DualStateLIFLayer(layer_input_size, hidden_size))
             layer_input_size = hidden_size
 
         self.last_hidden_size = hidden_layers_config[-1]
