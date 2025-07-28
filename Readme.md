@@ -1,6 +1,6 @@
-# HSRU: Hierarchical State Recurrent Unit
+# HSRU: Hybrid State Recurrent Unit
 
-A PyTorch implementation of a Hierarchical State Recurrent Unit (HSRU), a custom multi-layer RNN architecture inspired by biological neurons. This model is designed for sequence modeling and includes a high-performance, JIT-compiled implementation for efficient training.
+A PyTorch implementation of a Hybrid State Recurrent Unit (HSRU), a custom multi-layer RNN architecture inspired by biological neurons. This model is designed for sequence modeling and includes a high-performance, JIT-compiled implementation for efficient training.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/release/python-380/)
@@ -191,7 +191,7 @@ If you use HSRU in your research, please consider citing this repository:
 ```bibtex
 @software{your_name_2025_hsru,
   author = {Sameer Humagain},
-  title = {{HSRU: A Hierarchical State Recurrent Unit}},
+  title = {{HSRU: A Hybrid State Recurrent Unit}},
   month = {July},
   year = {2025},
   publisher = {GitHub},
