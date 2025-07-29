@@ -15,8 +15,6 @@ This hierarchical structure allows the model to learn representations at differe
 ## Key Features
 
 -   **Bio-inspired Dual-State Mechanism:** Each cell tracks both a continuous "voltage" (`V`) and a discrete "duration/spike" state (`D`), allowing for more complex temporal dynamics than a standard RNN/LSTM.
--   **Hierarchical Structure:** Layers are stacked to process sequences hierarchically, enabling the learning of features at multiple levels of abstraction.
--   **High-Performance Implementation:** The core recurrent loop is compiled with **`torch.jit.script`**, eliminating Python overhead and providing a **2x-10x speedup** over a naive implementation, making it feasible for training on long sequences.
 -   **Causal Language Model:** Includes a ready-to-use `HSRnnForCausalLM` wrapper for next-token prediction tasks.
 -   **Customizable:** Easily configure the network's depth and hidden sizes.
 
@@ -174,11 +172,7 @@ for epoch in range(5): # Loop over epochs
 ```
 
 ## To-Do & Future Work
-
--   [ ] Add more surrogate gradient functions for the spiking mechanism.
--   [ ] Implement a bidirectional version of the HSRU.
 -   [ ] Provide detailed benchmarks against standard LSTM, GRU, and Transformer models.
--   [ ] Integrate with the Hugging Face `transformers` library for easier use.
 
 ## License
 
