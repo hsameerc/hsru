@@ -10,7 +10,7 @@ from torch import nn, optim
 from core.hsru import HSRnn
 from tests.wrapper import ParityClassifier
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = torch.device("cpu")
 
 def generate_parity_data(n_samples, seq_len, input_size=1):
     """Generates a batch of data for the Temporal Parity Task."""

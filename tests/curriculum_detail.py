@@ -140,12 +140,12 @@ def run_and_visualize_final_models(lstm_args, hsru_args, data_args, lstm_lr, hsr
     set_seed(42)
     lstm_model = RNNClassifier(**lstm_args)
     _ = run_single_trial(lstm_model, *data_args, epochs, lstm_lr)  # Just to train
-    plot_hidden_states(lstm_model, data_args[-1], "LSTM (Best Config)")
+    plot_hidden_states(lstm_model, data_args[-1], "LSTM (Best Config)", lstm_lr)
     # Train and visualize HSRnn
     set_seed(42)
     hsru_model = RNNClassifier(**hsru_args)
     _ = run_single_trial(hsru_model, *data_args, epochs, hsru_lr)  # Just to train
-    plot_hidden_states(hsru_model, data_args[-1], "HSRnn (Best Config)")
+    plot_hidden_states(hsru_model, data_args[-1], "HSRnn (Best Config)", hsru_lr)
 
 
 def run_final_benchmark_with_sweep():
@@ -222,7 +222,7 @@ def run_final_benchmark_with_sweep():
     plt.grid(True, which='both', linestyle='--', linewidth=0.5)
     plt.legend(fontsize=12)
     plt.ylim(bottom=0.45, top=1.02)
-    plt.savefig(f"HSRnn vs. LSTM on Final Curriculum Stage ({curriculum[-1]['title']})")
+    plt.savefig(f"HSRnn vs. LSTM on Final Curriculum Stage ({curriculum[-1]['title']}).png")
     plt.close()
 
 if __name__ == '__main__':

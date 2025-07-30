@@ -10,7 +10,7 @@ from sklearn.metrics import accuracy_score
 from core.hsru import HSRnn
 from tests.wrapper import RNNClassifier, LSTMExtractor
 
-device = torch.device("cpu" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def set_seed(seed: int):
     """Sets a random seed for full reproducibility."""
@@ -98,7 +98,6 @@ def run_final_benchmark():
     BATCH_SIZE = 256
     EPOCHS = 40
 
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Running on device: {device}")
 
     print("Generating Temporal Parity Task data...")
