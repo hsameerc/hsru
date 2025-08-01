@@ -3,7 +3,7 @@ import random
 from sympy.printing.pytorch import torch
 from torch import optim, nn
 
-from core.hsru_casual_lm import HSRnnForCausalLM
+from core.single import SingleCasualHSRnn
 
 
 def generate_garage_door_batch(batch_size: int, sequence_length: int, device: torch.device):
@@ -52,7 +52,7 @@ def generate_garage_door_batch(batch_size: int, sequence_length: int, device: to
 
 
 # Training Function
-def train_garage(model: HSRnnForCausalLM, config: dict):
+def train_garage(model: SingleCasualHSRnn, config: dict):
     """Trains the model on the garage door task."""
     print("Starting Training: Garage Door Task")
     device = config['device']
@@ -79,7 +79,7 @@ def train_garage(model: HSRnnForCausalLM, config: dict):
 
 
 # Evaluation Function
-def evaluate_garage(model: HSRnnForCausalLM, config: dict):
+def evaluate_garage(model: SingleCasualHSRnn, config: dict):
     """Evaluates the model's accuracy on the garage door task."""
     print("\n--- Starting Evaluation ---")
     device = config['device']
@@ -124,7 +124,7 @@ if __name__ == "__main__":
     }
 
     print(f"Using device: {config['device']}")
-    model = HSRnnForCausalLM(
+    model = SingleCasualHSRnn(
         input_size=config['input_size'],
         hidden_layers_config=config['hidden_layers_config'],
         output_size=1

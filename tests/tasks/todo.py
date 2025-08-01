@@ -2,7 +2,7 @@ import torch
 from torch import optim, nn
 from torch.functional import F
 
-from core.hsru_casual_lm import HSRnnForCausalLM
+from core.single import SingleCasualHSRnn
 
 
 #  Data Generation
@@ -36,7 +36,7 @@ def generate_todo_batch(num_tasks: int, batch_size: int, sequence_length: int, d
 
 
 # Training Function
-def train_todo(model: HSRnnForCausalLM, config: dict):
+def train_todo(model: SingleCasualHSRnn, config: dict):
     """Trains the DualStateRNN model on the to-do list task."""
     print("Starting Training: To-Do List Task")
     device = config['device']
@@ -68,7 +68,7 @@ def train_todo(model: HSRnnForCausalLM, config: dict):
 
 
 # Evaluation Function
-def evaluate_todo(model: HSRnnForCausalLM, config: dict):
+def evaluate_todo(model: SingleCasualHSRnn, config: dict):
     """Evaluates the trained model's accuracy on the to-do list task."""
     print("\nStarting Evaluation")
     device = config['device']
@@ -122,7 +122,7 @@ if __name__ == "__main__":
         'device': 'cpu'
     }
     print(f"Using device: {config['device']}")
-    model = HSRnnForCausalLM(
+    model = SingleCasualHSRnn(
         input_size=config['input_size'],
         output_size=config['output_size'],
         hidden_layers_config=config['hidden_layers_config']

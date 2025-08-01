@@ -6,7 +6,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 
-from core.hsru_casual_lm import HSRnnForCausalLM
+from hsru.core.hsru_parallal import HSRnnForCausalLM
 
 
 class DungeonEnv:

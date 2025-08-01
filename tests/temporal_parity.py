@@ -7,7 +7,7 @@ import torch
 import torch.nn as nn
 from sklearn.metrics import accuracy_score
 
-from core.hsru import HSRnn
+from hsru.core.hsru_parallal import HSRnn
 from tests.wrapper import RNNClassifier, LSTMExtractor
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -69,7 +69,7 @@ def find_best_config(model_name: str, model_class: nn.Module, model_args: dict,
     for lr in lr_space:
         print(f"  Testing LR = {lr}...")
         set_seed(42)
-        model = torch.jit.script(model_class(**model_args))
+        model = model_class(**model_args)
         learning_curve = run_single_trial(model, train_loader, val_loader, epochs, lr)
         final_accuracy = learning_curve[-1]
         print(f" -> Final Accuracy: {final_accuracy:.2%}")

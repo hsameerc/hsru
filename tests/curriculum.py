@@ -93,7 +93,7 @@ def run_final_benchmark():
     """Main function to orchestrate the curriculum learning benchmark."""
     set_seed(42)
     # Baseline: LSTM (a stronger, more appropriate baseline for this task than GRU)
-    lstm_backbone = nn.LSTM(input_size=1, hidden_size=64, num_layers=2, batch_first=True)
+    lstm_backbone = nn.LSTM(input_size=1, hidden_size=64, num_layers=1, batch_first=True)
     # Wrapper to make LSTM return only the final hidden state of the last layer
     lstm_extractor = lambda x: lstm_backbone(x)[1][0][-1]
     lstm_model = ParityClassifier(lstm_extractor, hidden_size=64)

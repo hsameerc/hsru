@@ -1,0 +1,35 @@
+[build-system]
+requires = [
+    "scikit-build-core>=0.8.0",
+    "cmake>=3.18",
+    "ninja",
+    "torch",
+    "pybind11"
+]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "hsru_cuda_kernel"
+version = "0.6.0"
+description = "A fast, dynamic, and robust CUDA kernel for the HSRU model"
+authors = [{ name = "Sameer Humagain", email = "im@hsameer.com.np" }]
+readme = "README.md"
+license = { text = "MIT" }
+dependencies = [
+    "torch"
+]
+
+[project.urls]
+Homepage = "https://github.com/hsameerc/hsru_cuda_kernel"
+Repository = "https://github.com/hsameerc/hsru_cuda_kernel"
+
+[tool.scikit-build]
+wheel.packages = ["hsru_cuda_kernel"]
+
+[tool.scikit-build.cmake]
+version = ">=3.18"
+build-type = "Release"
+args = [
+    "-DCMAKE_CUDA_ARCHITECTURES=75;80;86;90",
+    "-DCMAKE_CUDA_COMPILER=nvcc"
+]
