@@ -5,9 +5,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from typing import List, Tuple
 
-# --- Step 1: Import Your Custom Kernel ---
-# This block ensures that Python can find the necessary CUDA DLLs on Windows.
-# It is crucial for making your package portable.
+
 if sys.platform == 'win32':
     # Attempt to get CUDA_HOME from environment variables, with a default fallback
     cuda_home = os.environ.get('CUDA_HOME', 'C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v12.1')
@@ -27,8 +25,6 @@ except ImportError as e:
     hsru_forward_cuda = None  # Set to None to cause an explicit error if used
     # sys.exit(1) # Uncomment to make a hard exit
 
-
-# --- Step 2: Create a High-Level Layer Using the CUDA Kernel ---
 
 class ParallelHSRULayer(nn.Module):
     """
@@ -68,25 +64,23 @@ class ParallelHSRULayer(nn.Module):
         if not x.is_cuda:
             raise RuntimeError("Input tensor must be on a CUDA device to use the HSRU CUDA kernel.")
 
-        # 1. Non-recurrent parts can be standard PyTorch operations
+        # Non-recurrent parts can be standard PyTorch operations
         input_currents = self.linear_in_v(x)
         leak_alpha = torch.exp(-F.softplus(self.leak_tau_v))
 
-        # 2. The entire recurrent computation over the time dimension
-        #    is replaced by a single call to our custom CUDA kernel.
+        # The entire recurrent computation over the time dimension
+        # is replaced by a single call to our custom CUDA kernel.
         combined_state_sequence = hsru_forward_cuda(
             input_currents,
             leak_alpha,
             self.flip_threshold
         )
 
-        # 3. The final output layer processes the entire sequence of states
+        # The final output layer processes the entire sequence of states
         output_sequence = self.output_activation(self.fc_out(combined_state_sequence))
 
         return output_sequence
 
-
-# --- Step 3: Rebuild HSRnn and HSRnnForCausalLM with the Fast Layer ---
 
 class HSRnn(nn.Module):
     """
@@ -146,17 +140,17 @@ class HSRnnForCausalLM(nn.Module):
         """
         output_sequence = x
 
-        # Pass the full sequence through the stack of fast RNN layers
+        # Passing the full sequence through the stack of fast RNN layers
         for layer in self.rnn_layers:
             output_sequence = layer(output_sequence)
 
-        # Apply the language modeling head to the entire output sequence
+        # Applying the language modeling head to the entire output sequence
         logits = self.lm_head(output_sequence)
 
         return logits
 
 
-# --- Example Usage ---
+# Example Usage
 if __name__ == '__main__':
     if not torch.cuda.is_available():
         print("CUDA is not available. This example requires a GPU.")
