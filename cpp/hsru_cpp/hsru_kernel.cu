@@ -12,38 +12,29 @@ __global__ void hsru_forward_kernel_impl(
     const int seq_len,
     const int hidden_size)
 {
-    // A temporary workspace for states, allocated in shared memory if it fits,
-    // otherwise it could be passed from global memory. For simplicity,
-    // we'll use a stack-based approach here assuming hidden_size is small.
-    // For large hidden_size, passing a workspace pointer is better.
-    float V_prev[256]; // Example static size, must be >= hidden_size
-    float D_prev[256];
+    const int b = blockIdx.x;
+    const int h = threadIdx.x;
+    if (h >= hidden_size) return;
 
-    const int b = blockIdx.x * blockDim.x + threadIdx.x;
-    if (b >= batch_size) return;
-    
-    // Initialize states
-    for (int h = 0; h < hidden_size; ++h) {
-        V_prev[h] = 0.0f; D_prev[h] = 0.0f;
-    }
+    float V_prev = 0.0f;
+    float D_prev = 0.0f;
 
-    // Pointers to data for this batch item
-    const float* input_b = input_seq + b * seq_len * hidden_size;
-    float* V_out_b = V_out + b * seq_len * hidden_size;
-    float* D_out_b = D_out + b * seq_len * hidden_size;
-
-    // Recurrent loop
     for (int t = 0; t < seq_len; ++t) {
-        for (int h = 0; h < hidden_size; ++h) {
-            const int idx = t * hidden_size + h;
-            const float V_t = leak[h] * V_prev[h] + input_b[idx];
-            const float spike = (V_t > threshold[h]) ? 1.0f : 0.0f;
-            const float D_t = D_prev[h] * (1.0f - spike) + (1.0f - D_prev[h]) * spike;
-            V_out_b[idx] = V_t;
-            D_out_b[idx] = D_t;
-            V_prev[h] = V_t;
-            D_prev[h] = D_t;
-        }
+        // Calculate the index for the current (b, t, h)
+        const int idx = b * seq_len * hidden_size + t * hidden_size + h;
+
+        // The recurrent update logic is the same, but simpler
+        const float V_t = leak[h] * V_prev + input_seq[idx];
+        const float spike = (V_t > threshold[h]) ? 1.0f : 0.0f;
+        const float D_t = D_prev * (1.0f - spike) + (1.0f - D_prev) * spike;
+
+        // Write outputs
+        V_out[idx] = V_t;
+        D_out[idx] = D_t;
+
+        // Update state for the next time step
+        V_prev = V_t;
+        D_prev = D_t;
     }
 }
 
@@ -59,8 +50,8 @@ extern "C" void launch_hsru_kernel(
     const int seq_len,
     const int hidden_size)
 {
-    const dim3 threads(256);
-    const dim3 blocks((batch_size + threads.x - 1) / threads.x);
+    const dim3 blocks(batch_size);
+    const dim3 threads(hidden_size);
 
     hsru_forward_kernel_impl<<<blocks, threads>>>(
         input_seq, leak, threshold,
