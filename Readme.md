@@ -91,7 +91,7 @@ This is the primary use case, which adds a language modeling head on top of the 
 
 ```python
 import torch
-from hsru.model import HSRnnForCausalLM
+from src.core.hsru_casual_lm import HSRnnForCausalLM
 
 # Configuration
 vocab_size = 10000
@@ -126,7 +126,7 @@ Here is a minimal training loop for the `HSRnnForCausalLM`.
 ```python
 import torch
 import torch.nn as nn
-from hsru.model import HSRnnForCausalLM
+from src.core.hsru_casual_lm import HSRnnForCausalLM
 
 # --- Model and Data Setup ---
 device = "cuda" if torch.cuda.is_available() else "cpu"
