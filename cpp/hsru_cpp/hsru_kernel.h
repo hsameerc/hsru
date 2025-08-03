@@ -1,10 +1,6 @@
-// hsru_cpp/hsru_kernel.h (NEW, MINIMALIST VERSION)
+// hsru_cpp/hsru_kernel.h
+
 #pragma once
-
-// NO #include <torch/extension.h> HERE!
-// This header will be included by both a C++ file and a CUDA file.
-// It must only contain things that both compilers can understand.
-
 // Use extern "C" to prevent C++ name mangling, creating a clean C-style ABI.
 #ifdef __cplusplus
 extern "C" {

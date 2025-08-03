@@ -7,7 +7,7 @@ import torch.nn as nn
 from torch.utils.data import DataLoader, TensorDataset
 
 import torch.nn.functional as F
-# --- Step 1: Import Your Custom Kernel ---
+
 # This block ensures that Python can find the necessary CUDA DLLs on Windows.
 if sys.platform == 'win32':
     cuda_home = os.environ.get('CUDA_HOME', 'C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v12.1')
@@ -26,7 +26,6 @@ except ImportError as e:
     sys.exit(1)
 
 
-# --- Step 2: Define the RNN Layer that USES your kernel ---
 class ParallelHSRnnV2(nn.Module):
     """
     This is the nn.Module that wraps the call to our custom CUDA kernel.
@@ -46,24 +45,23 @@ class ParallelHSRnnV2(nn.Module):
         if not x.is_cuda:
             raise RuntimeError("Model and data must be on the GPU to use the CUDA kernel.")
 
-        # 1. Non-recurrent parts run as standard PyTorch layers
+        # Non-recurrent parts run as standard PyTorch layers
         input_currents = self.linear_in_v(x)
         leak_alpha = torch.exp(-F.softplus(self.leak_tau_v))
 
-        # 2. Call our super-fast, custom CUDA kernel for the recurrent part!
+        # Calling our super-fast, custom CUDA kernel for the recurrent part!
         combined_state = hsru_forward_cuda(
             input_currents,
             leak_alpha,
             self.flip_threshold
         )
 
-        # 3. The final output layer is also a standard PyTorch layer
+        # The final output layer is also a standard PyTorch layer
         output_sequence = self.output_activation(self.fc_out(combined_state))
 
         return output_sequence
 
 
-# --- Step 3: Define the Full Classifier Model ---
 class ParityClassifier(nn.Module):
     """Wraps our custom RNN and adds a classification head."""
 
@@ -73,18 +71,17 @@ class ParityClassifier(nn.Module):
         self.classifier = nn.Linear(hidden_size, output_size)
 
     def forward(self, x):
-        # Get hidden states for the entire sequence from our custom RNN
+        # Getting hidden states for the entire sequence from our custom RNN
         hidden_states = self.rnn(x)
 
         # We only care about the state after the last element is processed
         final_hidden_state = hidden_states[:, -1, :]
 
-        # Classify based on this final state
+        # Classifying based on this final state
         output = self.classifier(final_hidden_state)
         return output
 
 
-# --- Step 4: Data Generation ---
 def create_parity_data(num_samples, seq_len):
     """Generates binary sequences and their parity labels."""
     X = torch.randint(0, 2, (num_samples, seq_len, 1)).float()
@@ -93,7 +90,6 @@ def create_parity_data(num_samples, seq_len):
     return X, y.float()
 
 
-# --- Step 5: Training and Evaluation Script ---
 if __name__ == "__main__":
     if not torch.cuda.is_available():
         print("This test requires a CUDA-enabled GPU.")
@@ -110,12 +106,12 @@ if __name__ == "__main__":
     BATCH_SIZE = 128
     EPOCHS = 15
 
-    # Create the model, loss function, and optimizer
+    # Creating the model, loss function, and optimizer
     model = ParityClassifier(INPUT_SIZE, HIDDEN_SIZE, OUTPUT_SIZE).to(device)
     criterion = nn.BCEWithLogitsLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)
 
-    # Generate Data
+    # Generating Data
     print("Generating training and test data...")
     X_train, y_train = create_parity_data(20000, SEQ_LEN)
     X_test, y_test = create_parity_data(2000, SEQ_LEN)

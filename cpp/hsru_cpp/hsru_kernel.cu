@@ -1,3 +1,5 @@
+//hsru_cpp/hsru_kernel.cu
+
 #include "hsru_kernel.h"
 #include <cuda_runtime.h>
 #include <device_launch_parameters.h>

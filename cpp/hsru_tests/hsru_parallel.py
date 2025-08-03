@@ -4,7 +4,6 @@ import torch.nn.functional as F
 
 import hsru_cuda_kernel
 
-
 class ParallelHSRnnV2(nn.Module):
     def __init__(self, input_size: int, hidden_size: int):
         super().__init__()
@@ -33,11 +32,9 @@ class ParallelHSRnnV2(nn.Module):
         return output_sequence
 
 
-# Example test:
 if __name__ == '__main__':
-    # Try with different hidden sizes!
     HIDDEN_SIZE_1 = 32
-    HIDDEN_SIZE_2 = 96  # This would have failed before
+    HIDDEN_SIZE_2 = 96
 
     model_1 = ParallelHSRnnV2(1, HIDDEN_SIZE_1).to('cuda')
     model_2 = ParallelHSRnnV2(1, HIDDEN_SIZE_2).to('cuda')
@@ -46,10 +43,10 @@ if __name__ == '__main__':
 
     print(f"Testing with hidden_size={HIDDEN_SIZE_1}...")
     output_1 = model_1(test_input)
-    print(f"Output shape: {output_1.shape}")  # Should be (16, 50, 32)
+    print(f"Output shape: {output_1.shape}")
     print("Success!")
 
     print(f"\nTesting with hidden_size={HIDDEN_SIZE_2}...")
     output_2 = model_2(test_input)
-    print(f"Output shape: {output_2.shape}")  # Should be (16, 50, 96)
+    print(f"Output shape: {output_2.shape}")
     print("Success!")

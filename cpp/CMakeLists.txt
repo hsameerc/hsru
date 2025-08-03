@@ -1,5 +1,5 @@
 # ===================================================================
-# === HSRU CUDA Kernel CMake Build System (Production-Grade)       ===
+# === HSRU CUDA Kernel CMake Build System ===
 # ===================================================================
 cmake_minimum_required(VERSION 3.18)
 project(hsru_cuda_kernel LANGUAGES CXX CUDA)
@@ -7,18 +7,18 @@ project(hsru_cuda_kernel LANGUAGES CXX CUDA)
 # Optional: Set CUDA Toolkit path manually (Windows-specific)
 set(CUDAToolkit_ROOT "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.8")
 
-# --- Build Configuration ---
+# Build Configuration
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CUDA_STANDARD 17)
 set(CMAKE_CUDA_COMPILER "nvcc")
 
-# --- Find Dependencies ---
+# Find Dependencies
 find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
 find_package(Torch REQUIRED)
 find_package(pybind11 REQUIRED)
 find_package(CUDAToolkit REQUIRED)
 
-# --- Target Definition ---
+# Target Definition
 pybind11_add_module(_core MODULE
     hsru_cpp/hsru_binding.cpp
     hsru_cpp/hsru_kernel.cu

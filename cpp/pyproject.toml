@@ -20,8 +20,8 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/hsameerc/hsru_cuda_kernel"
-Repository = "https://github.com/hsameerc/hsru_cuda_kernel"
+Homepage = "https://github.com/hsameerc/hsru"
+Repository = "https://github.com/hsameerc/hsru"
 
 [tool.scikit-build]
 wheel.packages = ["hsru_cuda_kernel"]
