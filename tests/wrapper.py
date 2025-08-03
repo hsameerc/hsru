@@ -55,3 +55,14 @@ class LSTMExtractor(nn.Module):
     def forward(self, x):
         _, (final_hidden_state, _) = self.lstm(x)
         return final_hidden_state[-1]
+
+class GRUWrapper(nn.Module):
+    def __init__(self, input_size, hidden_size, num_layers=1):
+        super().__init__()
+        self.gru = nn.GRU(input_size, hidden_size, num_layers, batch_first=True)
+
+    def forward(self, x):
+        # GRU returns (output_sequence, hidden_state)
+        # We want the output of the last time step.
+        output_sequence, _ = self.gru(x)
+        return output_sequence[:, -1, :]
