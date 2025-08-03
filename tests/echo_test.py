@@ -6,7 +6,9 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 
-from core.hsru_casual_lm import HSRnnForCausalLM
+from core.hsru_parallal import HSRnnForCausalLM
+# from core.hsru_casual_lm import HSRnnForCausalLM
+
 from tests.wrapper import LSTM_Seq2Seq_Wrapper
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -36,7 +38,6 @@ def generate_echo_data(n_samples: int, seq_len: int, input_size: int = 1) -> tup
 def train_and_eval_echo(model_name: str, model: nn.Module, epochs=50, batch_size=128, seq_len=5000, lr=1e-3):
     """Performs a full training and evaluation for the echo task."""
     print(f"\n--- Training {model_name} on the Delayed Echo Task ---")
-    model = torch.jit.script(model)
     model.to(device)
     optimizer = optim.Adam(model.parameters(), lr=lr)
     criterion = nn.MSELoss()
