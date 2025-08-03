@@ -9,17 +9,9 @@ from torch import nn, optim
 
 from src.core.hsru_parallal import HSRnn
 from tests.wrapper import ParityClassifier
-from verify.verify_data import run_data_diagnostics
+from verify.verify_data import run_data_diagnostics, generate_parity_tensors
 
 device = torch.device("cuda")
-
-
-def generate_parity_tensors(n_samples, seq_len, input_size=1):
-    """Generates a batch of data for the Temporal Parity Task."""
-    X = torch.randint(0, 2, (n_samples, seq_len, input_size)).float()
-    y = (X.sum(dim=(1, 2)) % 2 == 1).long()
-    return X, y
-
 
 def set_seed(seed: int):
     """Sets a random seed for full reproducibility."""

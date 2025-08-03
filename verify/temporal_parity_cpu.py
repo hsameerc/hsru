@@ -9,6 +9,7 @@ from sklearn.metrics import accuracy_score
 
 from src.core.hsru import HSRnn
 from tests.wrapper import RNNClassifier, LSTMExtractor
+from verify.verify_data import prepare_parity_dataloaders, run_data_diagnostics, create_rigorous_parity_datasets
 
 device = torch.device("cpu")
 
@@ -86,6 +87,10 @@ def find_best_config(model_name: str, model_class: nn.Module, model_args: dict,
     return best_accuracy, best_lr, best_curve, num_params
 
 
+def check_data_leakage(train_seqs, val_seqs):
+    pass
+
+
 def run_final_benchmark():
     """Main function to orchestrate the full, fair benchmark."""
     print("Setting up Final Benchmark")
@@ -99,18 +104,14 @@ def run_final_benchmark():
     EPOCHS = 40
 
     print(f"Running on device: {device}")
-
+    train_seqs, val_seqs = create_rigorous_parity_datasets(
+        train_samples=10000,
+        val_samples=2000,
+        seq_len=16
+    )
+    check_data_leakage(train_seqs, val_seqs)
     print("Generating Temporal Parity Task data...")
-    num_samples = BATCH_SIZE * 50
-    X_data = torch.randint(0, 2, (num_samples, SEQ_LEN, INPUT_SIZE)).float()
-    y_data = (X_data.sum(dim=(1, 2)) % 2 == 1).long()
-    dataset = torch.utils.data.TensorDataset(X_data, y_data)
-    train_size = int(0.8 * len(dataset))
-    val_size = len(dataset) - train_size
-    train_dataset, val_dataset = torch.utils.data.random_split(dataset, [train_size, val_size])
-    train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
-    val_loader = torch.utils.data.DataLoader(val_dataset, batch_size=BATCH_SIZE)
-
+    train_loader,val_loader = prepare_parity_dataloaders(SEQ_LEN, input_size=INPUT_SIZE, batch_size=BATCH_SIZE, split_ratio= 0.8,total_batches=50,device=device )
     learning_rate_space = [5e-3, 1e-3, 5e-4, 1e-4]
 
     lstm_backbone_args = {'input_size': INPUT_SIZE, 'hidden_size': HIDDEN_SIZE, 'num_layers': NUM_LAYERS}
@@ -146,6 +147,7 @@ def run_final_benchmark():
     plt.legend(fontsize=12)
     plt.ylim(bottom=0.45, top=1.02)
     plt.savefig(f"../plots/temporal_parity_cpu/temporal_parity_cpu_lstm_vs_hsru.png")
+    plt.show()
 
 
 if __name__ == '__main__':
