@@ -10,7 +10,7 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "hsru_cuda_kernel"
-version = "0.7.0"
+version = "1.0.0"
 description = "A fast, dynamic, and robust CUDA kernel for the HSRU model"
 authors = [{ name = "Sameer Humagain", email = "im@hsameer.com.np" }]
 readme = "README.md"

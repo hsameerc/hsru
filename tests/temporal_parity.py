@@ -7,7 +7,7 @@ import torch
 import torch.nn as nn
 from sklearn.metrics import accuracy_score
 
-from hsru.core.hsru_parallal import HSRnn
+from core.hsru_parallal import HSRnn
 from tests.wrapper import RNNClassifier, LSTMExtractor
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
