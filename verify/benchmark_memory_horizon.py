@@ -212,6 +212,7 @@ def run_memory_horizon_benchmark():
     }
 
     curriculum = [
+        {'seq_len': 2, 'epochs': 100},
         {'seq_len': 10, 'epochs': 100},
         {'seq_len': 15, 'epochs': 150},
         {'seq_len': 20, 'epochs': 200},
