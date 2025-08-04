@@ -9,7 +9,7 @@ from torch import nn, optim
 
 from src.core.hsru import HSRnn
 from tests.wrapper import ParityClassifier
-from verify.verify_data import generate_parity_data, run_data_diagnostics
+from verify.verify_data import generate_parity_tensors, run_data_diagnostics
 
 device = torch.device("cpu")
 
@@ -35,7 +35,7 @@ def train_and_eval(model, train_args, title, epochs=200, batch_size=512, lr=1e-4
     for epoch in range(epochs):
         model.train()
         # Generate fresh data for each epoch
-        X, y = generate_parity_data(batch_size, **train_args)
+        X, y = generate_parity_tensors(batch_size, **train_args)
         X, y = X.to(device), y.to(device)
 
         pred, _ = model(X)
@@ -48,7 +48,7 @@ def train_and_eval(model, train_args, title, epochs=200, batch_size=512, lr=1e-4
         # Validation at the end of each epoch
         with torch.no_grad():
             model.eval()
-            X_test, y_test = generate_parity_data(512, **train_args)  # Test on a larger set
+            X_test, y_test = generate_parity_tensors(512, **train_args)  # Test on a larger set
             X_test, y_test = X_test.to(device), y_test.to(device)
             out, _ = model(X_test)
             acc = accuracy_score(y_test.cpu().numpy(), torch.argmax(out, dim=1).cpu().numpy())
@@ -85,7 +85,7 @@ def plot_hidden_states(model, data_args, title):
 def collect_hidden_states(model, data_args, label):
     """Returns hidden states and labels from a model."""
     model.eval()
-    X, y = generate_parity_data(512, **data_args)
+    X, y = generate_parity_tensors(512, **data_args)
     X = X.to(device)
     _, hidden = model(X)
     return hidden.detach().cpu().numpy(), y.numpy(), [label] * len(y)
