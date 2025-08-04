@@ -13,6 +13,30 @@ def generate_parity_tensors(n_samples, seq_len, input_size=1):
     y = (X.sum(dim=(1, 2)) % 2 == 1).long()
     return X, y
 
+def prepare_noisy_parity_dataloaders(seq_len, input_size=1, batch_size=256, split_ratio=0.8, total_batches=50, noise_ratio=0.05, device='cpu'):
+    """
+    Generates parity data with optional label noise and returns train/val DataLoaders.
+    """
+    print("📦 Generating noisy Temporal Parity Task dataset...")
+    num_samples = batch_size * total_batches
+    X_data, y_data = generate_parity_tensors(num_samples, seq_len, input_size)
+    X_data, y_data = X_data.to(device), y_data.to(device)
+
+    # Flip a percentage of labels
+    num_noisy = int(noise_ratio * num_samples)
+    noisy_indices = torch.randperm(num_samples)[:num_noisy]
+    y_data[noisy_indices] = 1 - y_data[noisy_indices]  # Flip 0 ↔ 1
+
+    dataset = TensorDataset(X_data, y_data)
+    train_size = int(split_ratio * len(dataset))
+    val_size = len(dataset) - train_size
+    train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
+
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+    val_loader = DataLoader(val_dataset, batch_size=batch_size)
+
+    print(f"✅ Dataset ready with {num_noisy} noisy labels.")
+    return train_loader, val_loader
 
 def prepare_parity_dataloaders(seq_len, input_size=1, batch_size=256, split_ratio=0.8, total_batches=50, device='cpu'):
     """

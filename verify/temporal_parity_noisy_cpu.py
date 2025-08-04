@@ -9,7 +9,8 @@ from sklearn.metrics import accuracy_score
 
 from src.core.hsru import HSRnn
 from tests.wrapper import RNNClassifier, LSTMExtractor
-from verify.verify_data import prepare_parity_dataloaders, run_data_diagnostics, create_rigorous_parity_datasets
+from verify.verify_data import prepare_parity_dataloaders, run_data_diagnostics, create_rigorous_parity_datasets, \
+    prepare_noisy_parity_dataloaders
 
 device = torch.device("cpu")
 
@@ -111,7 +112,7 @@ def run_final_benchmark():
     )
     check_data_leakage(train_seqs, val_seqs)
     print("Generating Temporal Parity Task data...")
-    train_loader,val_loader = prepare_parity_dataloaders(SEQ_LEN, input_size=INPUT_SIZE, batch_size=BATCH_SIZE, split_ratio= 0.8,total_batches=50,device=device )
+    train_loader,val_loader = prepare_noisy_parity_dataloaders(SEQ_LEN, input_size=INPUT_SIZE, batch_size=BATCH_SIZE, split_ratio= 0.8,total_batches=50,device=device )
     learning_rate_space = [5e-3, 1e-3, 5e-4, 1e-4]
 
     lstm_backbone_args = {'input_size': INPUT_SIZE, 'hidden_size': HIDDEN_SIZE, 'num_layers': NUM_LAYERS}
