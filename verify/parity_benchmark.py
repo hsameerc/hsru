@@ -25,9 +25,9 @@ from src.core.hsru import HSRnn
 # Centralize all settings for easy modification and reproducibility
 class BenchmarkConfig:
     SEED = 42
-    DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    DEVICE = torch.device("cpu")
     # Data settings
-    SEQ_LEN = 16
+    SEQ_LEN = 60
     TRAIN_SAMPLES = 10000
     VAL_SAMPLES = 2000
     # Model settings
@@ -251,7 +251,6 @@ def plot_all_hidden_states(
     colors = ['#0072B2', '#D55E00']  # Blue and Orange/Vermillion
     class_names = ['Parity 0 (Even)', 'Parity 1 (Odd)']
 
-    fig.suptitle(f"t-SNE Visualization of Final Hidden States (SeqLen={config.SEQ_LEN})", fontsize=20, y=1.02)
 
     for i, name in enumerate(models_dict.keys()):
         ax = axes[i]
@@ -286,8 +285,9 @@ def plot_all_hidden_states(
         ax.spines['top'].set_visible(False)
         ax.spines['right'].set_visible(False)
 
-    plt.tight_layout(rect=[0, 0, 1, 0.96])  # Adjust layout to make room for the main title
-    # To save the figure to a file instead of showing it:
+    fig.suptitle(f"t-SNE Visualization of Final Hidden States (SeqLen={config.SEQ_LEN})", fontsize=20, y=0.95)
+    plt.tight_layout()
+    fig.subplots_adjust(top=0.88)
     # plt.savefig("tsne_comparison.png", dpi=300, bbox_inches='tight')
     plt.show()
 
